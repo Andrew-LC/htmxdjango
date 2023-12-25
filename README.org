@@ -1,0 +1,3 @@
+* Django app using HTMX
+
+I am following the HTMX book to learn htmx and django
