@@ -5,7 +5,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
   </head>
-  <body hx-boost="true" class="bg-[#161615] h-screen flex flex-col items-center">
+  <body
+    hx-boost="true"
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+    class="bg-[#161615] h-screen flex flex-col items-center">
     <h1 class="p-4 font-bold text-4xl lg:w-1/2 w-full text-center bg-blue-700 text-white">CONTACTS APP</h1>
     <hr class="ml-4 mt-3"/>
     <main>

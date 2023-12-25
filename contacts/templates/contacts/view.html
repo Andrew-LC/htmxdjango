@@ -1,19 +1,21 @@
 {% extends "./layout.html" %}
 
 {% block content %}
+<div class="bg-gray-100 p-6 rounded-lg shadow-md">
+  <h1 class="text-3xl font-bold mb-4">{{ contact.first }} {{ contact.last }}</h1>
 
+  <div class="mb-4">
+    <div class="text-gray-700">Phone: {{ contact.phone }}</div>
+    <div class="text-gray-700">Email: {{ contact.email }}</div>
+  </div>
 
-<h1>{{contact.first}} {{contact.last}}</h1>
-
-<div>
-  <div>Phone: {{contact.phone}}</div>
-  <div>Email: {{contact.email}}</div>
+  <p class="flex space-x-4">
+    <a href="/contacts/{{ contact.id }}/edit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
+      Edit
+    </a>
+    <a href="/contacts" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-gray active:bg-gray-800">
+      Back
+    </a>
+  </p>
 </div>
-
-<p>
-  <a href="/contacts/{{contact.id}}/edit">Edit</a>
-  <a href="/contacts">Back</a>
-</p>
-
-
 {% endblock %}

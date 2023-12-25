@@ -1,23 +1,29 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.template import loader
 from .models import Contact
 from .forms import NewContact
 
 def index(request):
-   query = request.GET.get("q")
-   if query is not None:
-      contacts = Contact.objects.filter(first__icontains=query)
-   else:
-      contacts = Contact.objects.all() 
-      
-   template = loader.get_template("contacts/index.html")
-   context = {
-         "contacts": contacts
-   }
-   return HttpResponse(template.render(context, request))
-    
+    query = request.GET.get("q")
+    page_number = request.GET.get("page", 1)
+
+    if query:
+        contacts = Contact.objects.filter(first__icontains=query)
+    else:
+        contacts = Contact.objects.all()
+
+    # Paginate the contacts with 10 contacts per page
+    paginator = Paginator(contacts, 10)
+    page = paginator.get_page(page_number)
+
+    context = {
+        "contacts": page,
+        "query": query,
+    }
+    return render(request, "contacts/index.html", context)
 
 def new(request):
     if request.method == "POST":
@@ -71,10 +77,11 @@ def edit(request, contact_id):
 def delete(request, contact_id):
     contact = get_object_or_404(Contact, id=contact_id)
 
-    if request.method == "POST":
+    if request.method == "DELETE":
         contact.delete()
         messages.success(request, "Successfully deleted contact")
-        return redirect("/contacts")
+        return redirect("/contacts", 303)
     else:
         messages.error(request, "Invalid request method for contact deletion")
+        print("didnt work mate")
         return redirect("/contacts")
