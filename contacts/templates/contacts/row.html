@@ -1,0 +1,18 @@
+{% for contact in contacts %}
+<tr class="border-b border-gray-200">
+  <td class="p-3"><input type="checkbox" name="selected_contact_ids" value="{{ contact.id }}"></td>
+  <td class="p-3">{{ contact.first }}</td>
+  <td class="p-3">{{ contact.last }}</td>
+  <td class="p-3">{{ contact.phone }}</td>
+  <td class="p-3">{{ contact.email }}</td>
+  <td class="p-3">
+    <a href="/contacts/{{ contact.id }}/edit" class="text-indigo-600 hover:text-indigo-900 mr-4 cursor-pointer">Edit</a>
+    <a href="/contacts/{{ contact.id }}/view" class="text-indigo-600 hover:text-indigo-900 mr-4 cursor-pointer">View</a>
+    <a href="/contacts/{{ contact.id }}" 
+       hx-swap="outerHTML swap:1s"
+       hx-confirm="Are you sure you want to delete this contact?"
+       hx-target="closest tr"
+       class="text-red-600 hover:text-red-900 cursor-pointer">Delete</a>
+  </td>
+</tr>
+{% endfor %}

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./static/style.css">
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
   </head>
   <body
@@ -11,7 +12,7 @@
     class="bg-[#161615] h-screen flex flex-col items-center">
     <h1 class="p-4 font-bold text-4xl lg:w-1/2 w-full text-center bg-blue-700 text-white">CONTACTS APP</h1>
     <hr class="ml-4 mt-3"/>
-    <main>
+    <main class="bg-slate-800">
       {% block content %}
       {% endblock %}
     </main>

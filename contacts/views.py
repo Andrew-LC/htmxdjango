@@ -8,28 +8,41 @@ from .forms import NewContact
 
 def index(request):
     query = request.GET.get("q")
-    page_number = request.GET.get("page", 1)
-
+    
     if query:
-        contacts = Contact.objects.filter(first__icontains=query)
+        contacts = Contact.objects.filter(
+            first__icontains=query
+            | Contact.objects.filter(last__icontains=query)
+            | Contact.objects.filter(email__icontains=query)
+            | Contact.objects.filter(phone__icontains=query)
+        )
+
+        if request.headers.get("HX-Trigger") == "search":
+            return render(request, "contacts/row.html", {"contacts": contacts, "count": Contact.objects.count()})
     else:
         contacts = Contact.objects.all()
 
-    # Paginate the contacts with 10 contacts per page
-    paginator = Paginator(contacts, 10)
-    page = paginator.get_page(page_number)
-
     context = {
-        "contacts": page,
-        "query": query,
+        "contacts": contacts,
+        "count": Contact.objects.count(),
     }
+
+    # Bulk delete
+    if request.method == "POST":
+        contact_ids = list(map(int, request.POST.getlist("selected_contact_ids")))
+        print(request.POST.getlist("selected_contact_ids"))
+        Contact.objects.filter(pk__in=contact_ids).delete()
+        messages.success(request, "Deleted Contacts!")
+
     return render(request, "contacts/index.html", context)
 
+    
 def new(request):
     if request.method == "POST":
         form = NewContact(request.POST)
         if form.is_valid():
             new_contact = Contact(
+                email=form.cleaned_data['email'],
                 first=form.cleaned_data['first_name'],
                 last=form.cleaned_data['last_name'],
                 phone=form.cleaned_data['phone']
@@ -80,8 +93,17 @@ def delete(request, contact_id):
     if request.method == "DELETE":
         contact.delete()
         messages.success(request, "Successfully deleted contact")
-        return redirect("/contacts", 303)
+        if request.headers.get("HX-Trigger") == "delete":
+            return redirect("/contacts", 303)
+        else:
+            return HttpResponse("")
     else:
         messages.error(request, "Invalid request method for contact deletion")
         print("didnt work mate")
         return redirect("/contacts")
+
+
+def count(request):
+    count = Contact.objects.count()
+    value = f"({count} total Contacts)" 
+    return HttpResponse(value)
