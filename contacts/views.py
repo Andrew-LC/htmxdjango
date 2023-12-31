@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.template import loader
 from .models import Contact
 from .forms import NewContact
+from .archiver import Archiver
+from wsgiref.util import FileWrapper
+from urllib.parse import quote as urlquote
+
 
 def index(request):
     query = request.GET.get("q")
@@ -12,19 +16,16 @@ def index(request):
     if query:
         contacts = Contact.objects.filter(
             first__icontains=query
-            | Contact.objects.filter(last__icontains=query)
-            | Contact.objects.filter(email__icontains=query)
-            | Contact.objects.filter(phone__icontains=query)
         )
 
         if request.headers.get("HX-Trigger") == "search":
-            return render(request, "contacts/row.html", {"contacts": contacts, "count": Contact.objects.count()})
+            return render(request, "contacts/row.html", {"contacts": contacts, "archiver": Archiver.get() })
     else:
         contacts = Contact.objects.all()
 
     context = {
         "contacts": contacts,
-        "count": Contact.objects.count(),
+        "archiver": Archiver.get(),
     }
 
     # Bulk delete
@@ -107,3 +108,18 @@ def count(request):
     count = Contact.objects.count()
     value = f"({count} total Contacts)" 
     return HttpResponse(value)
+
+def archive(request):
+    archiver = Archiver.get()
+    print(archiver)
+    archiver.run()
+    return render(request, "contacts/archive.html", {"archiver": archiver})
+
+def archive_content(request):
+    manager = Archiver.get()
+    file_path = manager.archive_file()
+
+    with open(file_path, 'rb') as file:
+        response = FileResponse(FileWrapper(file), as_attachment=True, filename="contacts.json")
+        response['Content-Disposition'] = f'attachment; filename={urlquote("contacts.json")}'
+        return response

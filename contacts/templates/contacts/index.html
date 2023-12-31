@@ -3,6 +3,7 @@
 {% block content %}
   <div class="p-6">
     <form action="/contacts" method="get" class="tool-bar">
+      {% include './archive.html' %}
       <div class="mt-1 mb-4 relative rounded-md shadow-sm border-2 border-black">
         <input
           hx-get="/contacts"
@@ -69,7 +70,7 @@
     </div>
   </div>
 
-  <button class="ml-5 p-2 bg-blue-700 text-white flex items-center justify-center rounded-md cursor-pointer">
+  <button class="ml-5 p-2 bg-blue-700 text-white flex items-center justify-center rounded-md cursor-pointer mb-5">
     <a href="/contacts/new" class="text-white">Add Contact</a>
     <span class="ml-2 text-gray-300"
       hx-get="/contacts/count"
